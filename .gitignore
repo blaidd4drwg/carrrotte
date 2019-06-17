@@ -37,3 +37,4 @@ rsconnect/
 
 # macOS Finder settings
 .DS_Store
+.Rproj.user
