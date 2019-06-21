@@ -1,11 +1,16 @@
+#' Parse Avaatech bAXIL XRF files
+#'
+#' @param path Directory path to *.csv input files
+#' @return
+#' @export
+#'
+
 read_avaatech_baxil <- function() {
-  # this function calls the specific functions to process data from each section in the raw file.
-  installPackages()
   files <- dir(pattern = ".+\\.csv")
-  if (is_empty(files)) stop("No csv files found in directory") #  stop if no csv files found in working directory
+  if (is_empty(files)) stop("No csv files found in directory")
   tmp <- map(files, makeTidyData) %>%
-    bind_rows() # bind dataframes together (row-wise)
-  # certain elements appear in different XRF models/voltages. Easy solution: Choosing trace with the highest total counts (=Area)
+    bind_rows()
+
   xrftbl <- tmp %>%
     group_by(Element, Voltage) %>% # apply to every Element and Voltage
     summarise(totalcounts = sum(Area)) %>% # total counts per group
@@ -17,8 +22,6 @@ read_avaatech_baxil <- function() {
     filter(Rep %in% "Rep0") # remove repeated measures
   xrftbl
 }
-
-# new function to tidy up data
 
 makeTidyData <- function(fileName) {
   tmp <- read_csv(fileName, quote = "") %>%

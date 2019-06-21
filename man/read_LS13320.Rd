@@ -4,7 +4,7 @@
 \alias{read_LS13320}
 \title{Parse export files from LS13 320}
 \usage{
-read_LS13320(pattern = ".+\\\\.\\\\$ls\\\\.txt")
+read_LS13320(path = ".", pattern = ".+\\\\.\\\\$ls\\\\.txt")
 }
 \arguments{
 \item{pattern}{Regex file pattern to filter files in input directory. Default pattern is ".+\\.\\$ls\\.txt"}
