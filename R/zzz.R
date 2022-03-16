@@ -1,5 +1,5 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("carrrotte: R tools to analyse data from sediment cores")
+  packageStartupMessage("carrrotter: R tools to analyse data from sediment cores")
 }
 
 .onLoad <- function(libname, pkgname) {

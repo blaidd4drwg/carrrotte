@@ -1,4 +1,4 @@
-Package: carrrotte
+Package: carrrotter
 Type: Package
 Title: Tools to Analyse Data from Sediment Cores
 Version: 0.1.0
@@ -8,18 +8,18 @@ Description: Tools to analyse data from sediment cores. This package will
     eventually contain different functions to process data from lab machines 
     commonly used in limnogeology and make helpful analyses.
 License: GPL-3
-BugReports: https://github.com/blaidd4drwg/carrrotte/issues
+BugReports: https://github.com/blaidd4drwg/carrrotter/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     dplyr,
-    magrittr,
     purrr,
     readr,
     rlang,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    tidyselect
 Suggests:
     tidyverse
