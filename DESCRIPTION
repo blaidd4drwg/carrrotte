@@ -7,7 +7,7 @@ Authors@R: person("Remo", "Roethlin", email = "avelarius@gmail.com",
 Description: Tools to analyse data from sediment cores. This package will
     eventually contain different functions to process data from lab machines 
     commonly used in limnogeology and make helpful analyses.
-License: GPL-3
+License: GPL (>= 3)
 BugReports: https://github.com/blaidd4drwg/carrrotter/issues
 Encoding: UTF-8
 LazyData: true

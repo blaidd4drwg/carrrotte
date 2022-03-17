@@ -105,17 +105,17 @@ parse_beckman_grainsizer_txt <-
   function(beckman_gs_txt_path, calculate_depths = TRUE) {
     gs_txt_filename <- basename(beckman_gs_txt_path)
     safe_validate <- purrr::safely(validate_beckman_grainsizer_txt)
-    read_gstxt_positions <- safe_validate(beckman_gs_txt_path)
+    validate_return_list <- safe_validate(beckman_gs_txt_path)
 
-    if (is.null(read_gstxt_positions$error)) {
-      read_gstxt_positions <- read_gstxt_positions$result
+    if (is.null(validate_return_list$error)) {
+      validate_return_list <- validate_return_list$result
     } else {
       stop(
         paste0(
           "Error encountered in ",
           gs_txt_filename,
           "; Skipping file. ",
-          read_gstxt_positions$error$message
+          validate_return_list$error$message
         )
       )
     }
@@ -128,7 +128,7 @@ parse_beckman_grainsizer_txt <-
 
     exec_args <-
       list(beckman_gs_txt_path,
-           read_gstxt_positions,
+           validate_return_list,
            calculate_depths)
     gs_data_tbl_list <- purrr::map(funs_parser, purrr::exec, !!!exec_args)
     names(gs_data_tbl_list) <-
@@ -146,6 +146,12 @@ validate_beckman_grainsizer_txt <- function(beckman_gs_txt_path) {
   error = function(e)
     stop("File validation failed: Unable to open fail for validation."))
 
+  filename_string <- gstxt_lines[2]
+  stopifnot("Sample name not found." = !(rlang::is_empty(filename_string) || is.na(filename_string)))
+
+  filename <- stringr::str_extract(gstxt_lines[2], "(?<=File name:\\t).+")
+  filename <- stringr::str_replace(filename, stringr::fixed(".$ls"), "")
+
   start_pattern <-
     c("LS\t|From\t|Particle Diameter\t|Channel Diameter \\(Lower\\)\t")
   start_vec <- stringr::str_which(gstxt_lines, start_pattern)
@@ -153,15 +159,16 @@ validate_beckman_grainsizer_txt <- function(beckman_gs_txt_path) {
                                                                length(start_vec) == 4L))
   end_vec <- which(gstxt_lines == "") - 1L
   # make a list of start and end of the sections
-  start_end_list <- list(start_vec, end_vec)
+  return_list <- list(start_vec, end_vec, filename)
 }
 
 extract_parameters <-
   function(beckman_gs_txt_path,
-           read_gstxt_positions,
+           validate_return_list,
            calculate_depths) {
-    start_pos <- read_gstxt_positions[[1]][1]
-    end_pos <- read_gstxt_positions[[2]][1]
+    start_pos <- validate_return_list[[1]][1]
+    end_pos <- validate_return_list[[2]][1]
+
     # clean up
     paramstbl_names <-
       c(
@@ -219,11 +226,12 @@ extract_parameters <-
 
 extract_stats <-
   function(beckman_gs_txt_path,
-           read_gstxt_positions,
+           validate_return_list,
            ...) {
     # Get start and end positions of second section (Summary statistics)
-    start_pos <- read_gstxt_positions[[1]][2]
-    end_pos <- read_gstxt_positions[[2]][2]
+    start_pos <- validate_return_list[[1]][2]
+    end_pos <- validate_return_list[[2]][2]
+    UID_filename <- validate_return_list[[3]]
     # Create an empty table with the necessary fields (columns), then feed data into the table (as before)
     statstbl_names <-
       c(
@@ -256,7 +264,7 @@ extract_stats <-
     statstbl <- tibble::as_tibble_row(statstbl)
     statstbl <-
       tibble::add_column(statstbl,
-                 UID = stringr::str_replace(basename(beckman_gs_txt_path), stringr::fixed(".$ls.txt"), ""),
+                 UID = !!UID_filename,
                  .before = 1)
     statstbl <- dplyr::mutate_at(statstbl, dplyr::vars(-.data$UID), as.numeric)
     statstbl
@@ -264,11 +272,12 @@ extract_stats <-
 
 extract_interpolations <-
   function(beckman_gs_txt_path,
-           read_gstxt_positions,
+           validate_return_list,
            ...) {
     # Get start and end positions of third section (Interpolated particle diameters)
-    start_pos <- read_gstxt_positions[[1]][3]
-    end_pos <- read_gstxt_positions[[2]][3]
+    start_pos <- validate_return_list[[1]][3]
+    end_pos <- validate_return_list[[2]][3]
+    UID_filename <- validate_return_list[[3]]
     # Read in the data (this time we don't have to flip it)
     interptbl <-
       dplyr::select(
@@ -286,7 +295,7 @@ extract_interpolations <-
     interptbl <- dplyr::filter(interptbl, .data$Di != 2000)
     interptbl <-
       tibble::add_column(interptbl,
-                 UID = stringr::str_replace(basename(beckman_gs_txt_path), stringr::fixed(".$ls.txt"), ""),
+                 UID = !!UID_filename,
                  .before = 1)
     interptbl <-
       dplyr::mutate(
@@ -317,11 +326,12 @@ extract_interpolations <-
 
 extract_channels <-
   function(beckman_gs_txt_path,
-           read_gstxt_positions,
+           validate_return_list,
            ...) {
     # Get start and end positions of fourth section (raw channel data)
-    start_pos <- read_gstxt_positions[[1]][4]
-    end_pos <- read_gstxt_positions[[2]][4]
+    start_pos <- validate_return_list[[1]][4]
+    end_pos <- validate_return_list[[2]][4]
+    UID_filename <- validate_return_list[[3]]
     # Read in the data (this time we don't have to flip it)
     channelstbl <-
       dplyr::select(
@@ -340,7 +350,7 @@ extract_channels <-
     channelstbl <- dplyr::mutate_all(channelstbl, as.numeric)
     channelstbl <-
       tibble::add_column(channelstbl,
-                 UID = stringr::str_replace(basename(beckman_gs_txt_path), stringr::fixed(".$ls.txt"), ""),
+                 UID = !!UID_filename,
                  .before = 1)
     channelstbl <- dplyr::rename(channelstbl, lwr = "um", volp = "Volume")
     channelstbl <- dplyr::filter(channelstbl, .data$lwr != 2000)
