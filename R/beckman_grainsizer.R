@@ -13,7 +13,7 @@ batch_process_beckman_grainsizer <-
       purrr::possibly(
         parse_beckman_grainsizer_txt,
         otherwise = NULL,
-        quiet = TRUE
+        quiet = FALSE
       ),
       calculate_depths
     )
@@ -155,7 +155,7 @@ validate_beckman_grainsizer_txt <- function(beckman_gs_txt_path) {
   start_pattern <-
     c("LS\t|From\t|Particle Diameter\t|Channel Diameter \\(Lower\\)\t")
   start_vec <- stringr::str_which(gstxt_lines, start_pattern)
-  stopifnot("File validation failed: Sections not found." = (!rlang::is_empty(start_vec) ||
+  stopifnot("File validation failed: Sections not found." = (!rlang::is_empty(start_vec) &&
                                                                length(start_vec) == 4L))
   end_vec <- which(gstxt_lines == "") - 1L
   # make a list of start and end of the sections
@@ -360,3 +360,4 @@ extract_channels <-
              Di = sqrt(.data$upr * .data$lwr))
     channelstbl
   }
+
