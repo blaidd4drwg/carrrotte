@@ -302,7 +302,7 @@ extract_interpolations <-
         interptbl,
         qual1 = dplyr::case_when(
           Di == 0.04 ~ "clay",
-          Di >= 4 &
+          Di >= 2 &
             Di <= 31 ~ "silt",
           Di >= 32 &
             Di < 1000 ~ "sand",
@@ -310,7 +310,8 @@ extract_interpolations <-
         ),
         qual2 = dplyr::case_when(
           Di == 0.04 ~ "",
-          Di == 4 ~ "very fine",
+          Di >= 2 &
+            Di < 8 ~ "very fine",
           Di == 8 ~ "fine",
           Di == 16 ~ "medium",
           Di == 31 ~ "coarse",
