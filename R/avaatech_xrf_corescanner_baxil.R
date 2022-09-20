@@ -34,10 +34,10 @@ batch_process_avaatech_baxil_csv <-
           otherwise = NULL,
           quiet = FALSE
         ),
-        cut_off_set = TRUE,
-        delim = ",",
-        show_col_types = FALSE,
-        xrf_data_start = 8,
+        cut_off_set = cut_off_set,
+        delim = delim,
+        show_col_types = show_col_types,
+        xrf_data_start = xrf_data_start,
         ...
       )
     xrf_data
@@ -74,14 +74,27 @@ parse_avaatech_baxil_csv <-
            xrf_data_start = 8,
            ...) {
     filename <- basename(avaa_baxil_csv_path)
+
+    # using fread for performance reasons
+    safe_read <- purrr::safely(data.table::fread)
+
     avaa_baxil_csv <-
-      readr::read_delim(
+      safe_read(
         avaa_baxil_csv_path,
-        delim = delim,
-        trim_ws = TRUE,
-        show_col_types = show_col_types,
+        sep = delim,
         ...
       )
+
+    avaa_baxil_csv <- avaa_baxil_csv$result
+
+    # We coerce the data.table dataframe back to a base R dataframe, as to maintain compatibility with the tidyverse code.
+    avaa_baxil_csv <- methods::as(avaa_baxil_csv, Class = "data.frame")
+
+    names(avaa_baxil_csv) <- stringr::str_trim(names(avaa_baxil_csv))
+
+    # We have to do this, because dplyr 1.0+ do strict type checking and tidyverse functions won't combine different types...even numeric and integer e.g!
+    avaa_baxil_csv <- dplyr::mutate(avaa_baxil_csv, dplyr::across(where(is.numeric), as.numeric))
+
     safe_validate <- purrr::safely(validate_avaa_baxil_csv)
 
     filename_field_tibble <-
@@ -132,13 +145,14 @@ parse_avaatech_baxil_csv <-
         CoreID = as.character(.data$CoreID),
         Voltage = as.numeric(.data$Voltage, "\\d+"),
         Current = as.numeric(.data$Current, "\\d+"),
-        Depth = as.numeric(.data$Depth)
+        Depth = as.numeric(.data$Depth),
+        Element = stringr::str_trim(.data$Element, side = "both")
       )
 
     avaa_baxil_csv <-
       tidyr::pivot_wider(avaa_baxil_csv,
-                  names_from = "Parameter",
-                  values_from = "Value")
+                         names_from = "Parameter",
+                         values_from = "Value")
 
     avaa_baxil_csv
   }
