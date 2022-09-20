@@ -1052,6 +1052,7 @@ shinycorescan <- function() {
           value = 0,
           {
             tmpdir <- tempdir()
+            olddir <- getwd()
             setwd(tmpdir)
             tmpdir_root <- "shinyCoreScan"
             tmpdir_csv_sub <- "shinyCoreScan/CSV"
@@ -1100,7 +1101,9 @@ shinycorescan <- function() {
 
             incProgress(1/progress_length)
 
-            zip::zip(zipfile = filename, files = tmpdir_root)
+            zipdownload <- zip::zip(zipfile = filename, files = tmpdir_root)
+            setwd(olddir)
+            zipdownload
           }
         )
       },
