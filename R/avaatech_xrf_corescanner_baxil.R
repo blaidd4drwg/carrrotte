@@ -113,6 +113,15 @@ parse_avaatech_baxil_csv <-
       )
     }
 
+    if (!("Sample" %in% names(avaa_baxil_csv))) {
+      stop(
+        paste0(
+          "No Sample field found in ",
+          filename,
+          "; Skipping file."
+        )
+      )
+    }
     if (cut_off_set) {
       avaa_baxil_csv[["Sample"]] <-
         avaa_baxil_csv[["Sample"]] - min(avaa_baxil_csv[["Sample"]])
