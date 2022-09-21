@@ -6,7 +6,7 @@
 \alias{carrrotter-package}
 \title{carrrotter: Tools to Analyse Data from Sediment Cores}
 \description{
-Tools to analyse data from sediment cores. This package will eventually contain different functions to process data from lab machines commonly used in limnogeology and make helpful analyses.
+Tools to analyse data from sediment cores. This package will eventually contain different functions to process data from lab machines commonly used in limnogeology and make helpful analyses. Currently contains functions to parse Avaatech bAXIL Corescanner files and an interactive shiny app to inspect, diagnose, clean, visualise and export parsed corescanner data.
 }
 \seealso{
 Useful links:

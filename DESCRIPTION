@@ -6,7 +6,9 @@ Authors@R: person("Remo", "Roethlin", email = "avelarius@gmail.com",
   role = c("aut", "cre"))
 Description: Tools to analyse data from sediment cores. This package will
     eventually contain different functions to process data from lab machines 
-    commonly used in limnogeology and make helpful analyses.
+    commonly used in limnogeology and make helpful analyses. Currently contains
+    functions to parse Avaatech bAXIL Corescanner files and an interactive shiny app to
+    inspect, diagnose, clean, visualise and export parsed corescanner data.
 License: GPL (>= 3)
 BugReports: https://github.com/blaidd4drwg/carrrotter/issues
 Encoding: UTF-8
@@ -34,4 +36,7 @@ Imports:
     zip,
     jsonlite
 Suggests:
-    tidyverse
+    testthat (>= 3.0.0),
+    tidyverse,
+    withr
+Config/testthat/edition: 3
