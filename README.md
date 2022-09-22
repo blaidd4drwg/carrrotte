@@ -188,4 +188,4 @@ Contribution is actively encouraged! Some ideas on how *you* can contribute, eve
 * More things I didn't think of
 
 ## How to contact
-you can contact me using [Issues](https://github.com/blaidd4drwg/carrrotter/issues) or via my GitHub [Email address](mailto:avelarius@gmail.com). Feel free to contact me for support as well.
+you can contact me using [Issues](https://github.com/blaidd4drwg/carrrotter/issues) to report problems/solutions or via my GitHub [Email address](mailto:avelarius@gmail.com). Feel free to contact me for support as well. For questions that could help others/the community, you can also use [GitHub Discussions](https://github.com/blaidd4drwg/carrrotter/discussions).
