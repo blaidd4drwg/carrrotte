@@ -36,6 +36,11 @@ shinycorescan <- function() {
             ),
             multiple = TRUE
           ),
+          numericInput(
+            "import_xrf_data_start",
+            HTML("Start column of XRF Data"),
+            value = 8
+          ),
           actionButton("import_loaddata", "Load & Parse XRF data"),
           hr(),
           checkboxInput("import_catmode", "Concatenate core sections"),
@@ -276,6 +281,7 @@ shinycorescan <- function() {
 
       files <- fpath
       no_files <- length(files)
+      xrf_data_start <- req(input$import_xrf_data_start)
 
       withProgress(
         message = "Parsing XRF files",
@@ -286,7 +292,7 @@ shinycorescan <- function() {
             files,
             seq_along(files),
             function(x, y) {
-              xrf_parsed <- parse_avaatech_baxil_csv(x)
+              xrf_parsed <- parse_avaatech_baxil_csv(x, xrf_data_start = xrf_data_start)
               setProgress(y / no_files)
               xrf_parsed
             }
